@@ -4,14 +4,19 @@ const Sequelize = require('sequelize');
 const { Users } = require('../models');
 const bcrypt = require('bcrypt');
 const db = require('../models');
+const jwt = require('jsonwebtoken');
 
 const saltRounds = process.env.SALT_ROUNDS;
 console.log("Salt Rounds in user routes are: ", process.env.SALT_ROUNDS);
-/* GET users listing. */
-router.get('/', async function(req, res, next) {
+
+
+// get users listing
+router.get('/', function(req, res, next) {
+  res.cookie('token', "test cookie");
   res.render('index');
 });
 
+// register new user
 router.post('/register', async (req, res, next) => {
   let { username, password, email} = req.body;
   const hashedPassword = bcrypt.hashSync(password, saltRounds);
@@ -36,6 +41,7 @@ router.post('/', (req, res, next) => {
   res.send("user added")
 })
 
+// log in functionality 
 router.post('/login', async (req, res, next) => {
   const {username, password} = req.body
   const userLogin = await Users.findOne({
@@ -44,15 +50,30 @@ router.post('/login', async (req, res, next) => {
     }
   });
   const dbPassword = userLogin.password
-  // compareSync will take the entered password from req.body and rehash it, compare to dbPassword
-  const comparePass =  bcrypt.compareSync(password, dbPassword);
+  // compareSync will take the entered password from req.body, rehash it, and compare to dbPassword
+  const comparePass =  bcrypt.compareSync(password, dbPassword); //boolean
+  
   if (comparePass) {
-    console.log("true--authorized user")
+    const secretKey = process.env.SECRET_KEY;
+    const token = jwt.sign({
+      data: Users.username,
+    }, secretKey, { expiresIn: '1h' });
+    console.log("this is your jwt token created from env SECRET_KEY: ", token);
+    res.cookie('token', token);
+    res.redirect('/protected');
+    console.log("true--authorized user");
+    // next('the view you want to redirect to);
   } else {
-    console.log("false--no user found")
+    console.log("false--no user found");
+    res.send('user not found')
   }
   console.log(userLogin);
-   res.json(userLogin);
+   
   // res.render("the next view/route combo= redirect")
 })
+
+// middleware helper -- the gatekeeper to the route
+
+
+
 module.exports = router;

@@ -5,25 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const { Users } = require('./models');
 // get config vars
 dotenv.config();
 console.log("SALT_ROUNDS secretly held in .env: ", process.env.SALT_ROUNDS);
 
-const secretKey = process.env.SECRET_KEY;
-console.log("SECRET_KEY secretly held in .env: ", secretKey);
 
-const token = jwt.sign({
-  data: 'Free the ducks'
-}, 'topSecretKey', { expiresIn: '1h' });
-console.log("this is your jwt token created from env SECRET_KEY: ", token);
-
-jwt.verify(
-  token,
-  secretKey,
-  function (err, decoded) {
-    console.log('Decoded', decoded)
-  }
-)
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');

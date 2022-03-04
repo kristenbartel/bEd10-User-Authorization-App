@@ -126,3 +126,34 @@ These tokens are verification passes to routes/rooms. The database is the gateke
 )
     NOTE: the issue date/time is unix based time stamp, therefore will look straaaange....
     The unix time stamp is a way to track time as a running total of seconds. This count starts at the Unix Epoch on January 1st, 1970 at UTC. Therefore, the unix time stamp is merely the number of seconds between a particular date and the Unix Epoch. It should also be pointed out (thanks to the comments from visitors to this site) that this point in time technically does not change no matter where you are located on the globe. This is very useful to computer systems for tracking and sorting dated information in dynamic and distributed applications both online and client side. On this date the Unix Time Stamp will cease to work due to a 32-bit overflow. Before this moment millions of applications will need to either adopt a new convention for time stamps or be migrated to 64-bit systems which will buy the time stamp a "bit" more time.
+
+
+---bezkoder for Authorizing---
+https://www.bezkoder.com/node-js-jwt-authentication-postgresql/
+
+-Three important parts of JWT: Header, Payload and Signature
+together they combine to a standard structure: header.payload.signature
+
+The Client typically attaches JWT in Authorization header with Bearer prefix:
+(Authorization: Bearer [header].[payload].[signature])
+
+Or only in x-access-token header:
+(x-access-token: [header].[payload].[signature])
+
+
+put this in a route that accesses the GET/home or something like that
+// Setting the auth token in cookies
+        res.cookie('token', "test cookie"); //pass in a second arguments that is not auth token
+
+        const authToken = req.cookies['AuthToken'];
+
+---stack abuse---
+https://stackabuse.com/handling-authentication-in-express-js/
+
+bodyParser is now a built in part of express so there is no need to initialize
+
+.then is inter-changable with async await
+
+think about adding "user roles"
+
+generate a JWT with payload at userID and verify the user 
