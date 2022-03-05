@@ -1,22 +1,25 @@
-Kristen Bartel
-----set up---- 
-setting up an express app with ejs template engine, git (for gitignore) and bcrypt for authorization/hashing
+Kristen Bartel 
+----Objective----
+Clearly describe the set up and implementation of AUTHO, my first user registration and authentication app.
+AUTHO is able to:
+    -register a new user and save the registration to a database
+    -take in account details of new users and relationally connect them to their registration data
+    -authenticate a user upon login
+    -assign access tokens to logged in users 
+    -store access tokens in cookies 
+    -validate user tokens when accessing secured user routes
 
-1)express --ejs --git (or your app name) 
-    This will generate all the files [????npx express generator????]
+----Solutions Used----
+    -node.js for server
+    -express.js for routing
+    -sequelize for ORM 
+    -pg for promise based queries
+    -ejs for views templating
+    -bcrypt for hashing 
+    -jsonwebtokens for token generation and verification
+    -cookie-parser for reading cookie data
 
-2)npm install  
-    This command installs all the dependencies that were generated in the previous command. 
-
-3)npm start 
-    This will run the app- at this point text a sample route.
-
-4)add nodemon to package.json in the "scripts" section. 
-
-5)npm install bcrypt
-    This installs the package needed for hashing. 
-    
-Documents needed: 
+----Documents needed----
 *express-generator-- https://expressjs.com/en/starter/generator.html
 
 *sequelize (queries)-- https://sequelize.org/master/manual/model-querying-basics.html
@@ -29,7 +32,41 @@ Documents needed:
 
 *jSON Web Tokens Docs-- https://jwt.io/libraries
 
-NOTE: When running commands with npx vs npm means we are running selectively, from the cloud, instead of installing the entire package/module locally.
+*ejs
+
+NOTE: When running commands with npx vs npm: we are running selectively, from the cloud, instead of installing the entire package/module locally.
+
+----AUTHO set up---- 
+basic setting up an express app with ejs template engine, git (for gitignore), bcrypt for authorization/hashing, sequelize for ORM
+
+1)express --ejs --git (or your app name) 
+    This will generate all the files [????npx express generator????]
+
+2)npm install  
+    This command installs all the dependencies that were generated in the previous command. 
+
+3)npm start 
+    This will run the app- at this point test a sample route to ensure viability.
+
+4)add nodemon to package.json in the "scripts" section for dev-run-ease
+
+5)npm install bcrypt
+    This installs the package needed for hashing. 
+    
+
+------NOTES ejs--------
+html views can be 'templated' to bring in custom values to the client.
+ejs stands for Embedded jS templates which are used in both server and client side applications.
+
+basic syntax: 
+<% 'Scriptlet' tag, for control-flow, no output
+<%= Outputs the value into the template (HTML escaped)
+<%- Outputs the unescaped value into the template
+
+example
+<% if (message) { %>
+  <h2><%= message.name %></h2>
+<% } %>
 
 ----Authentication Basics----
 -Passwords get entered by users as plain text.
@@ -48,8 +85,10 @@ NOTE: When running commands with npx vs npm means we are running selectively, fr
         rounds=15: ~3 sec/hash
         rounds=25: ~1 hour/hash
         rounds=31: 2-3 days/hash
-read more about cryptography here: https://en.wikipedia.org/wiki/Cryptography
------create instance/DB-----
+
+major concepts about cryptography here: https://en.wikipedia.org/wiki/Cryptography
+
+-----creating development instance/DB-----
 1)Install packages/modules/etc
     npm install sequelize pg
         npx sequelize-cli init
@@ -76,7 +115,10 @@ read more about cryptography here: https://en.wikipedia.org/wiki/Cryptography
 Note: check file structure after each command, navigate to file and customize. Also use postico 'refresh' to ensure step migrations and seeds are populating to db.
 
 ---creating express routes----
-Express routes will be created in combination with sequelize 
+Express routes will be created in combination with sequelize is the design of your choosing
+
+In AUTHO the design is: 
+ /=>login||register||
 
 ---creating views that will be routed to---
 Once routes are established views can be built with templates 
@@ -99,6 +141,7 @@ NOTES:
     console.log("Salt Rounds in user routes are: ", process.env.SALT_ROUNDS);
 5) ensure that the .env is in the .gitignore
 
+NOTE: jwt requires each token be a Number() value.
 Use this in conjunction with the next section 
 
 ---Web Tokens---
@@ -157,3 +200,37 @@ bodyParser is now a built in part of express so there is no need to initialize
 think about adding "user roles"
 
 generate a JWT with payload at userID and verify the user 
+
+
+---notes from another section on sequelize generate, migrate, seed---
+npm init -y
+npm i express sequelize pg
+npm i --save-dev nodemon sequelize-cli
+touch index.js
+
+npx sequelize-cli init
+this will create a project structure with sequelize index.js in models as well as a few other files for seqeulize
+
+
+config file must be configured prior to creating db: 
+    enter the db name of choice- prior to making it so it pulls the db name from the config file
+
+    enter the server being used so it knows where to create it
+
+    enter the dialect being used, in this case postgres
+
+npx sequelize-cli db:create
+this will create a db from the info in the config file
+
+npx sequelize-cli model:generate --name User --attributes firstName:string,lastName:string,email:string
+this will create a data model with the defined --name and --attributes
+
+npx sequelize-cli db:migrate
+this will create a migrate file
+
+npx sequelize-cli seed:generate --name <insert table name>
+this will create a file that you can enter data manually to seed with the next command-- be sure to seed the Table Name-- not the model file name. 
+
+npx sequelize-cli db:seed:all
+
+acknowledge the bootstrap open source assets used, 

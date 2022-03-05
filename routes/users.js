@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const Sequelize = require('sequelize');
-const { Users } = require('../models');
+const { Users, UserAccount} = require('../models');
 const bcrypt = require('bcrypt');
 const db = require('../models');
 const jwt = require('jsonwebtoken');
@@ -36,8 +36,8 @@ router.post('/register', async (req, res, next) => {
 );
 
 router.post('/newUserForm', async (req, res, next) => {
-  let {} = req.body;
-  const newUser = await UserAccount.create({
+  let { firstname, lastname, address, city, state, phone, income } = req.body;
+  const newUserData = await UserAccount.create({
     firstname,
     lastname,
     address,
@@ -46,6 +46,7 @@ router.post('/newUserForm', async (req, res, next) => {
     phone,
     income
   });
+  res.render('/protected');
 })
 
 // log in user, authenticate, assign access token and store in cookies NOTE: comparePass returns auto-boolean

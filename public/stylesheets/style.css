@@ -35,4 +35,23 @@ body {
   }
 }
 
+.solutions {
+  font-size: 15vw;
+  color: #fff;
+}
+.techstack {
+  font-size: 5vw;
+  color: #fff;
+}
+.stack {
+  color: rgb(64, 86, 84);
+}
+
+
+@media()
+
+.solution {
+
+}
+
 
