@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
 
-/* GET home page. */
+// GET routes
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
@@ -15,8 +15,13 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-const isValidUser = (req, res, next) => { //parameters give this middleware access to req, res, next
-  const token = req.cookies['token']; //this is the token that was create on the route before
+router.get('/techstack', (req, res, next) => {
+  res.render('techstack');
+})
+
+// middleware 
+const isValidUser = (req, res, next) => {
+  const token = req.cookies['token']; 
   const secretKey = process.env.SECRET_KEY;
       jwt.verify(
         token,
@@ -24,24 +29,20 @@ const isValidUser = (req, res, next) => { //parameters give this middleware acce
         function (err, decoded) {
           console.log('Decoded', decoded)
           if (decoded) {
-            next();//this passes the request along so we can get the response back
+            next();
           } else {
-            res.redirect('/login'); //this 
-            // res.render('register', {title: "Register you account"}) this renders a template/view
+            res.redirect('/login');
           }
         });
       }
 
-router.get('/protected', isValidUser, (req, res, next) => { //isValidUser middleware validator
+// protected routed using middleware isValidUSer
+router.get('/protected', isValidUser, (req, res, next) => { 
   res.render('protected')
 });
 
 router.get('/newUserForm', isValidUser, (req, res, next)=> {
   res.render('newUser');
-})
-
-router.get('/techstack', (req, res, next) => {
-  res.render('techstack');
 })
 
 module.exports = router;

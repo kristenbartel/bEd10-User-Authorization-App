@@ -7,15 +7,16 @@ const db = require('../models');
 const jwt = require('jsonwebtoken');
 
 const saltRounds = Number(process.env.SALT_ROUNDS);
-console.log("Salt Rounds in user routes are: ", process.env.SALT_ROUNDS);
-
-
-// get users listing
-router.get('/', function(req, res, next) {
-  res.cookie('token', "test cookie");
-  res.render('index');
-});
-
+// console.log("Salt Rounds in user routes are: ", process.env.SALT_ROUNDS);
+          // router.post('/', (req, res, next) => {
+          //   const password = 'hello';
+          //   const hash = bcrypt.hashSync(password, saltRounds);
+          //   bcrypt.hash(password, saltRounds, (err, hash) => {
+          //   console.log('my password', password);
+          //   console.log('my hashed password', hash);
+          //   })
+          //   res.send("user added")
+          // })
 // register new user
 router.post('/register', async (req, res, next) => {
   let { username, password, email} = req.body;
@@ -34,17 +35,20 @@ router.post('/register', async (req, res, next) => {
   } 
 );
 
-router.post('/', (req, res, next) => {
-  const password = 'hello';
-  const hash = bcrypt.hashSync(password, saltRounds);
-  bcrypt.hash(password, saltRounds, (err, hash) => {
-  console.log('my password', password);
-  console.log('my hashed password', hash);
-  })
-  res.send("user added")
+router.post('/newUserForm', async (req, res, next) => {
+  let {} = req.body;
+  const newUser = await UserAccount.create({
+    firstname,
+    lastname,
+    address,
+    city,
+    state,
+    phone,
+    income
+  });
 })
 
-// log in functionality 
+// log in user, authenticate, assign access token and store in cookies NOTE: comparePass returns auto-boolean
 router.post('/login', async (req, res, next) => {
   const {username, password} = req.body
   const userLogin = await Users.findOne({
@@ -53,30 +57,22 @@ router.post('/login', async (req, res, next) => {
     }
   });
   const dbPassword = userLogin.password
-  // compareSync will take the entered password from req.body, rehash it, and compare to dbPassword
-  const comparePass =  bcrypt.compareSync(password, dbPassword); //boolean
-  
+  const comparePass =  bcrypt.compareSync(password, dbPassword);
   if (comparePass) {
     const secretKey = process.env.SECRET_KEY;
     const token = jwt.sign({
       data: Users.username,
     }, secretKey, { expiresIn: '1h' });
-    console.log("this is your jwt token created from env SECRET_KEY: ", token);
+        // console.log("this is your jwt token created from env SECRET_KEY: ", token);
     res.cookie('token', token);
     res.redirect('/protected');
-    console.log("true--authorized user");
-    // next('the view you want to redirect to);
+        // console.log("true--authorized user");
   } else {
-    console.log("false--no user found");
-    res.send('user not found')
+        // console.log("false--no user found");
+    res.render('errors')
   }
   console.log(userLogin);
-   
-  // res.render("the next view/route combo= redirect")
 })
-
-// middleware helper -- the gatekeeper to the route
-
 
 
 module.exports = router;
