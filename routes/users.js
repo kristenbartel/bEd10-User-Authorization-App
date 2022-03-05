@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const db = require('../models');
 const jwt = require('jsonwebtoken');
 
-const saltRounds = process.env.SALT_ROUNDS;
+const saltRounds = Number(process.env.SALT_ROUNDS);
 console.log("Salt Rounds in user routes are: ", process.env.SALT_ROUNDS);
 
 
@@ -20,16 +20,19 @@ router.get('/', function(req, res, next) {
 router.post('/register', async (req, res, next) => {
   let { username, password, email} = req.body;
   const hashedPassword = bcrypt.hashSync(password, saltRounds);
-  console.log(username, password, email);
   const newUser = await Users.create({
     username,
     password: hashedPassword,
     email
   });
-  res.json({
-    id: newUser.id
-  });
-});
+  const secretKey = process.env.SECRET_KEY;
+  const token = jwt.sign({
+      data: Users.username,
+    }, secretKey, { expiresIn: '1h' });
+    res.cookie('token', token);
+    res.redirect('/newUserForm');
+  } 
+);
 
 router.post('/', (req, res, next) => {
   const password = 'hello';

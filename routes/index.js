@@ -15,10 +15,9 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-    const isValidUser = (req, res, next) => { //parameters give this middleware access to req, res, next
-    const token = req.cookies['token']; //this is the token that was create on the route before
-    const secretKey = process.env.SECRET_KEY;
-      
+const isValidUser = (req, res, next) => { //parameters give this middleware access to req, res, next
+  const token = req.cookies['token']; //this is the token that was create on the route before
+  const secretKey = process.env.SECRET_KEY;
       jwt.verify(
         token,
         secretKey,
@@ -34,7 +33,15 @@ router.get('/login', (req, res) => {
       }
 
 router.get('/protected', isValidUser, (req, res, next) => { //isValidUser middleware validator
-  res.send("Authorized user, protected route")
+  res.render('protected')
 });
+
+router.get('/newUserForm', isValidUser, (req, res, next)=> {
+  res.render('newUser');
+})
+
+router.get('/techstack', (req, res, next) => {
+  res.render('techstack');
+})
 
 module.exports = router;
