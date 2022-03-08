@@ -36,6 +36,111 @@ AUTHO is able to:
 
 NOTE: When running commands with npx vs npm: we are running selectively, from the cloud, instead of installing the entire package/module locally.
 
+---server set up and dependency installs---
+1) npx express-generator --ejs --git name-of-your-app
+2) npm i pg sequelize bcrypt jsonwebtoken dotenv
+3) npx install 
+4) set up www in bin with PORT number and custom console messages
+5) package.json scripts with nodemon for app start
+
+---initialize new remote instance---
+1) create a new instance using https://www.elephantsql.com/
+2) open instance and enter details
+
+---sequelize setup---
+aka communicating with the db
+1) npx sequelize-cli init
+2) set up config.json with elephantSQL details. ex:
+        "development": {
+            "username": "uovslnto",
+            "password": "1q6wo9ko_2ZpGHf9dvmuHdKsEu-2WBHX",
+            "database": "uovslnto",
+            "host": "jelani.db.elephantsql.com",
+            "dialect": "postgres"
+        },
+
+---connecting postico---
+1) navigate to favorites and create new favorite- name it
+2) enter host, user, password and password from elephantSQL
+
+NOTE: the postgres database server always runs on port 5432
+
+---create models, migrate and seed models---
+1) create model (this auto generates a migration)
+    npx sequelize-cli model:generate --name User --attributes "firstname:string,lastname:string,username:string,password:string,email:string"
+2) run migration from the model to the db
+    npx sequelize-cli db:migrate
+3) create a seeder and seed the table
+    -npx sequelize-cli seed:generate --name User
+    -customize the seeder file
+    -npx sequelize-cli db:seed:all 
+        NOTE: db:seed:all seeds all seeder files over again- be specific if needed
+OR
+3) Use Postman to seed outlined below in ---POST route for Registration---
+
+---env file---
+1) Install dotenv module 
+     npm install dotenv
+2) create a .env file at the root
+    put "secrets" in this file like this:  key=value
+3) require where needed:
+    const dotenv = require('dotenv');
+    dotenv.config();
+    console.log("Salt Rounds are: ", process.env.SALT_ROUNDS);
+4) add secrets as needed:
+    const saltRounds = bcrypt.genSaltSync(Number(process.env.SALT_FACTOR));
+5) ensure that the .env is in the .gitignore
+
+NOTE: jwt requires each token be a Number() value. See example below
+
+---POST route for Registration using bcrypt---
+Top Level:
+1) require models, bcrypt, dotenv
+2) destructure saltRounds 
+    const saltRounds = bcrypt.genSaltSync(Number(process.env.SALT_FACTOR));
+Route: 
+1) create async/await route
+    router.post('/register', async (req, res, next) => {})
+2) const a req.body
+    const {} =req.body
+3) hash user password with bcrypt
+    hashedPassword = bcrypt.hashSync(password, saltRounds);
+4) create new user using hashedPassword with sequelize
+      const user = await User.create({
+        })
+5) res.send or res.render from here
+Testing route:
+1) create req.body in postman
+2) run POST to route
+    NOTE: the route is /users/register due to this route being held in the users.js routes
+
+---POST route for Login using bcrypt----
+1) create async/await route
+    router.post('/register', async (req, res, next) => {})
+2) const a req.body
+    const {} =req.body
+3) find user using password with sequelize
+      const user = await User.findOne({
+          where: {
+              username: username,
+          }
+        })
+4) compare the db password with req.body password using bcrypt
+    if (user) {
+    const comparePass = bcrypt.compareSync(password, user.password)
+    NOTE: this auto hashes req.body password before it compares to db
+5) if comparePass is true then res.----
+
+adding tokens
+
+---GET routes and ejs view templates---
+1) create GET routes that res.render the views
+2) establish views for routing
+    NOTES:
+    ** html <forms> have actions=""- these actions are the routes that are connecting
+    ** they also have methods that should match the crud methods-- ex. POST, GET
+    ** html <input> must have attributes of type="text" and name=""- These must contain keys that match the req.body object-- the user input will be the req.body value
+
 ----AUTHO set up---- 
 basic setting up an express app with ejs template engine, git (for gitignore), bcrypt for authorization/hashing, sequelize for ORM
 
@@ -114,35 +219,9 @@ major concepts about cryptography here: https://en.wikipedia.org/wiki/Cryptograp
 
 Note: check file structure after each command, navigate to file and customize. Also use postico 'refresh' to ensure step migrations and seeds are populating to db.
 
----creating express routes----
-Express routes will be created in combination with sequelize is the design of your choosing
-
 In AUTHO the design is: 
- /=>login||register||
+  insert picture here
 
----creating views that will be routed to---
-Once routes are established views can be built with templates 
-NOTES:
-** html <forms> have actions=""- these actions are the routes that are connecting
-** they also have methods that should match the crud methods-- ex. POST, GET
-** html <input> must have attributes of type="text" and name=""- These must contain keys that match the req.body object-- the user input will be the req.body value
-
----env files---
-1) Install dotenv module 
-     npm install dotenv
-2) create a .env file at the root
-    put "secrets" in this file like this:  key=value
-3) add to app.js:
-    const dotenv = require('dotenv');
-    dotenv.config();
-    console.log("Salt Rounds are: ", process.env.SALT_ROUNDS);
-4) add to route as needed:
-    const saltRounds = process.env.SALT_ROUNDS;
-    console.log("Salt Rounds in user routes are: ", process.env.SALT_ROUNDS);
-5) ensure that the .env is in the .gitignore
-
-NOTE: jwt requires each token be a Number() value.
-Use this in conjunction with the next section 
 
 ---Web Tokens---
 1) install the jwt library

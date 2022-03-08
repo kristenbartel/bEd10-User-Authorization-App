@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
+const { Users } = require('../models');
 
 // GET routes
 router.get('/', function(req, res, next) {
@@ -37,8 +38,23 @@ const isValidUser = (req, res, next) => {
       }
 
 // protected routed using middleware isValidUSer
-router.get('/protected', isValidUser, (req, res, next) => { 
-  res.render('protected')
+router.get('/protected/:id', isValidUser, async function (req, res, next) { 
+  const {id} = req.params;
+  const user = await UserAccount.findOne({
+    where: {
+      id:id
+    }
+  })
+  console.log(user);
+  res.render('protected', {
+    firstname: user.firstname,
+    lastname: user.lastname,
+    username: user.username,
+    address: user.address,
+    city: user.city,
+    state: user.state,
+    email: user.email
+  })
 });
 
 router.get('/newUserForm', isValidUser, (req, res, next)=> {

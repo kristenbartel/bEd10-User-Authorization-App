@@ -31,7 +31,7 @@ router.post('/register', async (req, res, next) => {
       data: Users.username,
     }, secretKey, { expiresIn: '1h' });
     res.cookie('token', token);
-    res.redirect('/newUserForm');
+    res.redirect('/login');
   } 
 );
 
@@ -66,7 +66,7 @@ router.post('/login', async (req, res, next) => {
     }, secretKey, { expiresIn: '1h' });
         // console.log("this is your jwt token created from env SECRET_KEY: ", token);
     res.cookie('token', token);
-    res.redirect('/protected');
+    res.redirect(`/protected/`);
         // console.log("true--authorized user");
   } else {
         // console.log("false--no user found");
