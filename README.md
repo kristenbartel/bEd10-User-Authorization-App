@@ -1,4 +1,7 @@
 Kristen Bartel
+
+add axios 
+npm install axios
 ----set up---- 
 setting up an express app with ejs template engine, git (for gitignore) and bcrypt for authorization/hashing
 
@@ -157,3 +160,5 @@ bodyParser is now a built in part of express so there is no need to initialize
 think about adding "user roles"
 
 generate a JWT with payload at userID and verify the user 
+
+git clone
